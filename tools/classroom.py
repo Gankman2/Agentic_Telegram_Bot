@@ -87,8 +87,9 @@ async def watch_classroom(app, chat_id):
                             f"Course: {cname}\n"
                             f"Title: {title}\n"
                             f"Type: {readable_type}\n"
-                            f"Due: {due_str}\n\n"
-                            f"Description: {description}\n\n"
+                            f"Due: {due_str}\n"
+                            f"Description: {description}\n"
+                            f"Form URL: {form_url}"
                             f"Want me to work on it?\n/yes or /skip"
                         )
                         await app.bot.send_message(

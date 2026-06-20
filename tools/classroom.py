@@ -5,7 +5,7 @@ import json
 from googleapiclient.discovery import build
 
 last_assignment = {}
-SEEN_PATH = os.path.join(os.path.dirname(__file__), '..', 'seen_assignments.json')
+SEEN_PATH = '/data/seen_assignments.json' if os.environ.get('RAILWAY_ENVIRONMENT') else os.path.join(os.path.dirname(__file__), '..', 'seen_assignments.json')
 
 def load_seen():
     if os.path.exists(SEEN_PATH):

@@ -101,7 +101,6 @@ async def watch_classroom(app, chat_id):
                         await app.bot.send_message(
                             chat_id=chat_id,
                             text=msg,
-                            parse_mode='Markdown'
                         )
         except Exception as e:
             print(f"Classroom error: {e}")

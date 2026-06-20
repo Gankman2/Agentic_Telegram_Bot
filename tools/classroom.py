@@ -63,6 +63,11 @@ async def watch_classroom(app, chat_id):
                             if 'form' in material:
                                 form_url = material['form'].get('formUrl')
                                 break
+                            elif 'link' in material:
+                                url = material['link'].get('url', '')
+                                if 'forms.google.com' in url or 'docs.google.com/forms' in url:
+                                    form_url = url
+                                    break
                         work_type = work.get('workType', 'ASSIGNMENT')
 
                         type_map = {

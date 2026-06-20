@@ -59,6 +59,7 @@ async def watch_classroom(app, chat_id):
                         due_str = f"{due.get('day')}/{due.get('month')}/{due.get('year')}" if due else 'No due date'
                         form_url = None
                         materials = work.get('materials', [])
+                        print(f"DEBUG materials: {materials}")
                         for material in materials:
                             if 'form' in material:
                                 form_url = material['form'].get('formUrl')

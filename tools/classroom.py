@@ -17,6 +17,19 @@ def save_seen(seen):
     with open(SEEN_PATH, 'w') as f:
         json.dump(list(seen), f)
 
+COMPLETED_PATH = '/data/completed_assignments.json' if os.environ.get('RAILWAY_ENVIRONMENT') else os.path.join(os.path.dirname(__file__), '..', 'completed_assignments.json')
+
+def load_completed():
+    if os.path.exists(COMPLETED_PATH):
+        with open(COMPLETED_PATH, 'r') as f:
+            return set(json.load(f))
+    return set()
+
+def save_completed(completed):
+    with open(COMPLETED_PATH, 'w') as f:
+        json.dump(list(completed), f)
+
+completed_assignments = load_completed()
 seen_assignments = load_seen()
 
 def get_classroom_service():
@@ -54,6 +67,7 @@ async def watch_classroom(app, chat_id):
                         readable_type = type_map.get(work_type, work_type)
 
                         last_assignment[chat_id] = {
+                            'id': wid,
                             'course': cname,
                             'title': title,
                             'type': readable_type,

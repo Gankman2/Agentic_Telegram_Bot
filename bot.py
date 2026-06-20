@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 from orchestrator import run_agent
-from tools.classroom import last_assignment
+from tools.classroom import last_assignment, completed_assignments, save_completed
 import requests
 from config import GROQ_API_KEY
 
@@ -19,6 +19,12 @@ async def yes_handler(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
     if not assignment:
         await update.message.reply_text("No assignment on record. Wait for a new notification.")
+        return
+
+    aid = assignment.get('id')
+
+    if aid and aid in completed_assignments:
+        await update.message.reply_text(f"✅ Already drafted a response for *{assignment['title']}*. Use /redo if you want a new draft.", parse_mode='Markdown')
         return
 
     await update.message.reply_text("✍️ Drafting a response for your assignment...")
@@ -50,6 +56,9 @@ Write at a secondary school level. Be thorough and structured."""
 
     if response.status_code == 200:
         draft = response.json()["choices"][0]["message"]["content"]
+        if aid:
+            completed_assignments.add(aid)
+            save_completed(completed_assignments)
         await update.message.reply_text(f"📝 *Assignment Draft:*\n\n{draft}", parse_mode='Markdown')
     else:
         await update.message.reply_text(f"LLM error: {response.status_code}")
@@ -57,11 +66,20 @@ Write at a secondary school level. Be thorough and structured."""
 async def skip_handler(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("⏭ Skipped. I'll notify you of the next one.")
 
+async def redo_handler(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    assignment = last_assignment.get(chat_id)
+    if assignment and assignment.get('id') in completed_assignments:
+        completed_assignments.discard(assignment['id'])
+        save_completed(completed_assignments)
+    await yes_handler(update, ctx)
+
 def build_bot():
     from config import TELEGRAM_TOKEN
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("yes", yes_handler))
     app.add_handler(CommandHandler("skip", skip_handler))
+    app.add_handler(CommandHandler("redo", redo_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     return app

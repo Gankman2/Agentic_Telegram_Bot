@@ -1,4 +1,7 @@
 import asyncio
+from setup_env import restore_files
+restore_files()
+
 from bot import build_bot
 from tools.classroom import watch_classroom
 

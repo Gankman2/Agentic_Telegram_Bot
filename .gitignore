@@ -1,0 +1,7 @@
+config.py
+credentials.json
+token.pickle
+__pycache__/
+*.pickle
+seen_assignments.json
+.env

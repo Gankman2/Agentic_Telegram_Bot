@@ -57,6 +57,12 @@ async def watch_classroom(app, chat_id):
                         due = work.get('dueDate', {})
                         description = work.get('description', 'No description provided.')
                         due_str = f"{due.get('day')}/{due.get('month')}/{due.get('year')}" if due else 'No due date'
+                        form_url = None
+                        materials = work.get('materials', [])
+                        for material in materials:
+                            if 'form' in material:
+                                form_url = material['form'].get('formUrl')
+                                break
                         work_type = work.get('workType', 'ASSIGNMENT')
 
                         type_map = {
@@ -72,7 +78,8 @@ async def watch_classroom(app, chat_id):
                             'title': title,
                             'type': readable_type,
                             'due': due_str,
-                            'description': description
+                            'description': description,
+                            'form_url': form_url
                         }
 
                         msg = (
